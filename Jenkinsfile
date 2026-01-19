@@ -1,35 +1,33 @@
 pipeline {
-  agent any
-  stages {
-    stage('Build') {
-      steps {
-        echo 'Build Complete'
-      }
-    }
+    agent any
 
-    stage('test') {
-      parallel {
-        stage('test') {
-          steps {
-            echo 'test'
-          }
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo 'Checkout source'
+                checkout scm
+            }
         }
 
-        stage('firsttime') {
-          steps {
-            echo 'test 1'
-          }
+        stage('Build Docker Image') {
+            steps {
+                echo 'Build image'
+                sh 'docker build -t nginx-test-app .'
+            }
         }
 
-      }
+        stage('Run Container') {
+            steps {
+                echo 'Run container'
+                sh '''
+                  docker rm -f nginx-test || true
+                  docker run -d \
+                    --name nginx-test \
+                    -p 8080:80 \
+                    nginx-test-app
+                '''
+            }
+        }
     }
-
-    stage('Deploy') {
-      steps {
-        input(message: 'Are You ready?', ok: 'Yes')
-        echo 'Deploy'
-      }
-    }
-
-  }
 }
