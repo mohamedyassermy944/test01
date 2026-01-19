@@ -20,7 +20,7 @@ pipeline {
         echo 'Run container'
         sh '''
                   docker rm -f nginx-test || true
-                  docker run -d                     --name nginx-test                     -p 8080:80                     nginx-test-app
+                  docker run -d                     --name nginx-test                     -p 900:80                     nginx-test-app
                 '''
       }
     }
